@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+
+<head th:replace="~{fragments/head :: head('Realizando Test')}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="flex-shrink-0">
+        <div class="container mt-4">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/test}">Test</a></li>
+                    <li class="breadcrumb-item active">Realizando Test</li>
+                </ol>
+            </nav>
+
+            <!-- Page Title -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>
+                    <i class="bi bi-clipboard-check-fill me-2"></i>
+                    Test en Progreso
+                </h1>
+                <div class="badge bg-primary fs-6">
+                    <span th:text="${questionCount}">10</span> preguntas
+                </div>
+            </div>
+
+            <!-- Questions -->
+            <form th:action="@{/test/submit}" method="post">
+                <!-- Hidden fields for filters -->
+                <input type="hidden" name="themeId" th:value="${themeId}">
+                <input type="hidden" name="difficulty" th:value="${difficulty}">
+
+                <div th:each="question, iterStat : ${questions}" class="card mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="card-title mb-0">
+                                <span class="badge bg-secondary me-2" th:text="${iterStat.count}">1</span>
+                                <span th:text="${question.questionText}">Pregunta</span>
+                            </h5>
+                            <div>
+                                <span class="badge bg-info me-1"
+                                    th:text="${question.theme?.name ?: 'Sin tema'}">Tema</span>
+                                <span class="badge"
+                                    th:classappend="${question.difficulty.name() == 'EASY'} ? 'bg-success' : (${question.difficulty.name() == 'MEDIUM'} ? 'bg-warning' : 'bg-danger')"
+                                    th:text="${question.difficulty}">
+                                    Dificultad
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- True/False Question -->
+                        <div th:if="${question.questionType == 'TRUE_FALSE'}">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" th:name="'answer_' + ${question.id}"
+                                    th:id="'q' + ${question.id} + '_true'" value="true" required>
+                                <label class="form-check-label" th:for="'q' + ${question.id} + '_true'">
+                                    Verdadero
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" th:name="'answer_' + ${question.id}"
+                                    th:id="'q' + ${question.id} + '_false'" value="false">
+                                <label class="form-check-label" th:for="'q' + ${question.id} + '_false'">
+                                    Falso
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Single Choice Question -->
+                        <div th:if="${question.questionType == 'SINGLE_CHOICE'}">
+                            <div th:each="option, optStat : ${question.options}" class="form-check mb-2">
+                                <input class="form-check-input" type="radio" th:name="'answer_' + ${question.id}"
+                                    th:id="'q' + ${question.id} + '_' + ${optStat.index}" th:value="${optStat.index}"
+                                    th:required="${optStat.first}">
+                                <label class="form-check-label" th:for="'q' + ${question.id} + '_' + ${optStat.index}">
+                                    <span th:text="${option}">Opción</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Multiple Choice Question -->
+                        <div th:if="${question.questionType == 'MULTIPLE_CHOICE'}">
+                            <p class="text-muted small mb-2"><em>Selecciona todas las opciones correctas</em></p>
+                            <div th:each="option, optStat : ${question.options}" class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" th:name="'answer_' + ${question.id}"
+                                    th:id="'q' + ${question.id} + '_' + ${optStat.index}" th:value="${optStat.index}">
+                                <label class="form-check-label" th:for="'q' + ${question.id} + '_' + ${optStat.index}">
+                                    <span th:text="${option}">Opción</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid gap-2 mb-4">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="bi bi-check-circle me-2"></i>
+                        Finalizar Test
+                    </button>
+                    <a th:href="@{/test}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Cancelar Test
+                    </a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+
+</html>

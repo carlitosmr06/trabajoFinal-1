@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<body>
+    <!-- Simple Breadcrumb Fragment -->
+    <nav th:fragment="breadcrumb (items)" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a th:href="@{/}">
+                    <i class="bi bi-house-door-fill"></i> Inicio
+                </a>
+            </li>
+            <li class="breadcrumb-item" th:each="item, iterStat : ${items}" th:classappend="${iterStat.last} ? 'active'"
+                th:aria-current="${iterStat.last} ? 'page' : null">
+                <a th:if="${!iterStat.last && item.url != null}" th:href="@{${item.url}}"
+                    th:text="${item.name}">Item</a>
+                <span th:if="${iterStat.last || item.url == null}" th:text="${item.name}">Current</span>
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Breadcrumb for Questions -->
+    <nav th:fragment="questions-breadcrumb" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a th:href="@{/}">
+                    <i class="bi bi-house-door-fill"></i> Inicio
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Preguntas</li>
+        </ol>
+    </nav>
+
+    <!-- Breadcrumb for Tests -->
+    <nav th:fragment="test-breadcrumb" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a th:href="@{/}">
+                    <i class="bi bi-house-door-fill"></i> Inicio
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Test</li>
+        </ol>
+    </nav>
+
+    <!-- Breadcrumb for Admin -->
+    <nav th:fragment="admin-breadcrumb (section)" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a th:href="@{/}">
+                    <i class="bi bi-house-door-fill"></i> Inicio
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a th:href="@{/admin}">Administración</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page" th:text="${section}">Sección</li>
+        </ol>
+    </nav>
+</body>
+
+</html>

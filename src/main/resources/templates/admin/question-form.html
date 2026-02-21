@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+
+<head th:replace="~{fragments/head :: head('Nueva Pregunta')}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="flex-shrink-0">
+        <div class="container mt-4">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/admin/questions}">Gestión</a></li>
+                    <li class="breadcrumb-item active">Nueva Pregunta</li>
+                </ol>
+            </nav>
+
+            <!-- Page Title -->
+            <h1 class="mb-4">
+                <i class="bi bi-plus-circle-fill me-2"></i>
+                Nueva Pregunta
+            </h1>
+
+            <div class="row">
+                <div class="col-md-10 mx-auto">
+                    <div class="card">
+                        <div class="card-body p-4">
+                            <form
+                                th:action="${question != null} ? @{/admin/questions/{id}/edit(id=${question.id})} : @{/admin/questions}"
+                                method="post" id="questionForm">
+
+                                <!-- Question Type -->
+                                <div class="mb-4">
+                                    <label for="questionType" class="form-label">Tipo de Pregunta *</label>
+                                    <select class="form-select" id="questionType" name="questionType" required
+                                        onchange="updateFormFields()" th:disabled="${question != null}">
+                                        <option value="">Selecciona un tipo</option>
+                                        <option value="TRUE_FALSE"
+                                            th:selected="${question != null && question.questionType == 'TRUE_FALSE'}">
+                                            Verdadero/Falso</option>
+                                        <option value="SINGLE_CHOICE"
+                                            th:selected="${question != null && question.questionType == 'SINGLE_CHOICE'}">
+                                            Opción Única</option>
+                                        <option value="MULTIPLE_CHOICE"
+                                            th:selected="${question != null && question.questionType == 'MULTIPLE_CHOICE'}">
+                                            Opción Múltiple</option>
+                                    </select>
+                                    <input type="hidden" name="questionType" th:if="${question != null}"
+                                        th:value="${question.questionType}">
+                                </div>
+
+                                <!-- Question Text -->
+                                <div class="mb-4">
+                                    <label for="questionText" class="form-label">Texto de la Pregunta *</label>
+                                    <textarea class="form-control" id="questionText" name="questionText" rows="3"
+                                        required th:text="${question != null ? question.questionText : ''}"></textarea>
+                                </div>
+
+                                <!-- Theme -->
+                                <div class="mb-4">
+                                    <label for="themeId" class="form-label">Tema *</label>
+                                    <select class="form-select" id="themeId" name="themeId" required>
+                                        <option value="">Selecciona un tema</option>
+                                        <option th:each="theme : ${themes}" th:value="${theme.id}"
+                                            th:text="${theme.name}"
+                                            th:selected="${question != null && question.theme.id == theme.id}">Tema
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <!-- Difficulty -->
+                                <div class="mb-4">
+                                    <label for="difficulty" class="form-label">Dificultad *</label>
+                                    <select class="form-select" id="difficulty" name="difficulty" required>
+                                        <option value="">Selecciona una dificultad</option>
+                                        <option value="EASY"
+                                            th:selected="${question != null && question.difficulty.name() == 'EASY'}">
+                                            Fácil</option>
+                                        <option value="MEDIUM"
+                                            th:selected="${question != null && question.difficulty.name() == 'MEDIUM'}">
+                                            Media</option>
+                                        <option value="HARD"
+                                            th:selected="${question != null && question.difficulty.name() == 'HARD'}">
+                                            Difícil</option>
+                                    </select>
+                                </div>
+
+                                <!-- True/False Answer -->
+                                <div class="mb-4" id="trueFalseSection" style="display: none;">
+                                    <label class="form-label">Respuesta Correcta *</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="trueFalseAnswer"
+                                            id="answerTrue" value="true"
+                                            th:checked="${question != null && question.questionType == 'TRUE_FALSE' && question.correctAnswer == true}">
+                                        <label class="form-check-label" for="answerTrue">Verdadero</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="trueFalseAnswer"
+                                            id="answerFalse" value="false"
+                                            th:checked="${question != null && question.questionType == 'TRUE_FALSE' && question.correctAnswer == false}">
+                                        <label class="form-check-label" for="answerFalse">Falso</label>
+                                    </div>
+                                </div>
+
+                                <!-- Options (for Single/Multiple Choice) -->
+                                <div id="optionsSection" style="display: none;">
+                                    <label class="form-label">Opciones *</label>
+                                    <div class="mb-2"
+                                        th:if="${question == null || question.questionType == 'TRUE_FALSE'}">
+                                        <input type="text" class="form-control mb-2" name="options"
+                                            placeholder="Opción 1">
+                                        <input type="text" class="form-control mb-2" name="options"
+                                            placeholder="Opción 2">
+                                        <input type="text" class="form-control mb-2" name="options"
+                                            placeholder="Opción 3">
+                                        <input type="text" class="form-control mb-2" name="options"
+                                            placeholder="Opción 4">
+                                    </div>
+                                    <div class="mb-2"
+                                        th:if="${question != null && (question.questionType == 'SINGLE_CHOICE' || question.questionType == 'MULTIPLE_CHOICE')}">
+                                        <input type="text" class="form-control mb-2" name="options"
+                                            th:each="opt, iter : ${question.options}" th:value="${opt}">
+                                        <!-- Add empty inputs if fewer than 4 options -->
+                                        <input type="text" class="form-control mb-2" name="options"
+                                            th:if="${question.options.size() < 4}"
+                                            th:each="i : ${#numbers.sequence(question.options.size() + 1, 4)}">
+                                    </div>
+                                </div>
+
+                                <!-- Single Choice Answer -->
+                                <div class="mb-4" id="singleChoiceSection" style="display: none;">
+                                    <label for="singleChoiceAnswer" class="form-label">Respuesta Correcta (índice)
+                                        *</label>
+                                    <select class="form-select" id="singleChoiceAnswer" name="singleChoiceAnswer">
+                                        <option value="0"
+                                            th:selected="${question != null && question.questionType == 'SINGLE_CHOICE' && question.correctAnswerIndex == 0}">
+                                            Opción 1</option>
+                                        <option value="1"
+                                            th:selected="${question != null && question.questionType == 'SINGLE_CHOICE' && question.correctAnswerIndex == 1}">
+                                            Opción 2</option>
+                                        <option value="2"
+                                            th:selected="${question != null && question.questionType == 'SINGLE_CHOICE' && question.correctAnswerIndex == 2}">
+                                            Opción 3</option>
+                                        <option value="3"
+                                            th:selected="${question != null && question.questionType == 'SINGLE_CHOICE' && question.correctAnswerIndex == 3}">
+                                            Opción 4</option>
+                                    </select>
+                                </div>
+
+                                <!-- Multiple Choice Answers -->
+                                <div class="mb-4" id="multipleChoiceSection" style="display: none;">
+                                    <label class="form-label">Respuestas Correctas (índices) *</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="multipleChoiceAnswers"
+                                            value="0" id="mc0"
+                                            th:checked="${question != null && question.questionType == 'MULTIPLE_CHOICE' && question.correctAnswerIndices.contains(0)}">
+                                        <label class="form-check-label" for="mc0">Opción 1</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="multipleChoiceAnswers"
+                                            value="1" id="mc1"
+                                            th:checked="${question != null && question.questionType == 'MULTIPLE_CHOICE' && question.correctAnswerIndices.contains(1)}">
+                                        <label class="form-check-label" for="mc1">Opción 2</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="multipleChoiceAnswers"
+                                            value="2" id="mc2"
+                                            th:checked="${question != null && question.questionType == 'MULTIPLE_CHOICE' && question.correctAnswerIndices.contains(2)}">
+                                        <label class="form-check-label" for="mc2">Opción 3</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="multipleChoiceAnswers"
+                                            value="3" id="mc3"
+                                            th:checked="${question != null && question.questionType == 'MULTIPLE_CHOICE' && question.correctAnswerIndices.contains(3)}">
+                                        <label class="form-check-label" for="mc3">Opción 4</label>
+                                    </div>
+                                </div>
+
+                                <!-- Buttons -->
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a th:href="@{/admin/questions}" class="btn btn-secondary">
+                                        <i class="bi bi-x-circle me-1"></i>
+                                        Cancelar
+                                    </a>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-check-circle me-1"></i>
+                                        <span
+                                            th:text="${question != null ? 'Actualizar Pregunta' : 'Crear Pregunta'}">Crear
+                                            Pregunta</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script>
+        function updateFormFields() {
+            const questionType = document.getElementById('questionType').value;
+
+            // Hide all sections
+            document.getElementById('trueFalseSection').style.display = 'none';
+            document.getElementById('optionsSection').style.display = 'none';
+            document.getElementById('singleChoiceSection').style.display = 'none';
+            document.getElementById('multipleChoiceSection').style.display = 'none';
+
+            // Show relevant sections
+            if (questionType === 'TRUE_FALSE') {
+                document.getElementById('trueFalseSection').style.display = 'block';
+            } else if (questionType === 'SINGLE_CHOICE') {
+                document.getElementById('optionsSection').style.display = 'block';
+                document.getElementById('singleChoiceSection').style.display = 'block';
+            } else if (questionType === 'MULTIPLE_CHOICE') {
+                document.getElementById('optionsSection').style.display = 'block';
+                document.getElementById('multipleChoiceSection').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+
+</html>

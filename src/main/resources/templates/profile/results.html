@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+
+<head th:replace="~{fragments/head :: head('Mis Resultados')}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="flex-shrink-0">
+        <div class="container mt-4">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/profile}">Mi Perfil</a></li>
+                    <li class="breadcrumb-item active">Mis Resultados</li>
+                </ol>
+            </nav>
+
+            <!-- Page Title -->
+            <h1 class="mb-4">
+                <i class="bi bi-graph-up-arrow me-2"></i>
+                Mis Resultados
+            </h1>
+
+            <div class="row">
+                <div class="col-md-10 mx-auto">
+                    <!-- Stats Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card text-white bg-primary">
+                                <div class="card-body text-center">
+                                    <h2 class="mb-0" th:text="${totalTests}">0</h2>
+                                    <p class="mb-0">Tests Realizados</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-white bg-success">
+                                <div class="card-body text-center">
+                                    <h2 class="mb-0" th:text="${averageScore} + '%'">0%</h2>
+                                    <p class="mb-0">Promedio General</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-white bg-info">
+                                <div class="card-body text-center">
+                                    <h2 class="mb-0" th:text="${bestScore} + '%'">0%</h2>
+                                    <p class="mb-0">Mejor Puntuación</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results Table -->
+                    <div class="card shadow">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-list-check me-2"></i>
+                                Historial de Tests
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Empty State -->
+                            <div th:if="${resultsPage.isEmpty()}" class="text-center py-5">
+                                <i class="bi bi-clipboard-x display-1 text-muted"></i>
+                                <h3 class="mt-3 text-muted">No has realizado ningún test aún</h3>
+                                <p class="text-muted mb-4">Comienza a hacer tests para ver tus resultados aquí</p>
+                                <a th:href="@{/test}" class="btn btn-primary">
+                                    <i class="bi bi-play-fill me-2"></i>
+                                    Hacer un Test
+                                </a>
+                            </div>
+
+                            <!-- Results Table -->
+                            <div th:if="${!resultsPage.isEmpty()}" class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Tema</th>
+                                            <th>Dificultad</th>
+                                            <th>Resultado</th>
+                                            <th>Puntuación</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="result : ${resultsPage.content}">
+                                            <td th:text="${#temporals.format(result.completedAt, 'dd/MM/yyyy HH:mm')}">
+                                                17/02/2026</td>
+                                            <td>
+                                                <span th:if="${result.theme != null}"
+                                                    th:text="${result.theme.name}">Java</span>
+                                                <span th:if="${result.theme == null}" class="text-muted">Todos</span>
+                                            </td>
+                                            <td>
+                                                <span th:if="${result.difficulty != null}"
+                                                    th:classappend="${result.difficulty.name() == 'EASY' ? 'bg-success' : (result.difficulty.name() == 'MEDIUM' ? 'bg-warning' : 'bg-danger')}"
+                                                    class="badge">
+                                                    <span
+                                                        th:text="${result.difficulty.name() == 'EASY' ? 'Fácil' : (result.difficulty.name() == 'MEDIUM' ? 'Media' : 'Difícil')}">Fácil</span>
+                                                </span>
+                                                <span th:if="${result.difficulty == null}"
+                                                    class="text-muted">Todas</span>
+                                            </td>
+                                            <td>
+                                                <span
+                                                    th:text="${result.correctAnswers} + '/' + ${result.totalQuestions}">8/10</span>
+                                            </td>
+                                            <td>
+                                                <span
+                                                    th:classappend="${result.score >= 70 ? 'bg-success' : (result.score >= 50 ? 'bg-warning' : 'bg-danger')}"
+                                                    class="badge">
+                                                    <span
+                                                        th:text="${#numbers.formatDecimal(result.score, 1, 1)} + '%'">80%</span>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a th:href="@{/test/result/{id}(id=${result.id})}"
+                                                    class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-eye me-1"></i>
+                                                    Ver Detalles
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Back Button -->
+                    <div class="mt-4">
+                        <a th:href="@{/profile}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i>
+                            Volver al Perfil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+
+</html>

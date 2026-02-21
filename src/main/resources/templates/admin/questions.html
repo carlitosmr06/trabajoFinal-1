@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+
+<head th:replace="~{fragments/head :: head('Gestión de Preguntas')}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="flex-shrink-0">
+        <div class="container mt-4">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                    <li class="breadcrumb-item active">Gestión de Preguntas</li>
+                </ol>
+            </nav>
+
+            <!-- Page Title -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>
+                    <i class="bi bi-gear-fill me-2"></i>
+                    Gestión de Preguntas
+                </h1>
+                <a th:href="@{/admin/questions/new}" class="btn btn-success">
+                    <i class="bi bi-plus-circle me-1"></i>
+                    Nueva Pregunta
+                </a>
+            </div>
+
+            <!-- Flash Messages -->
+            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle me-2"></i>
+                <span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form th:action="@{/admin/questions}" method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="themeId" class="form-label">Tema</label>
+                            <select class="form-select" id="themeId" name="themeId">
+                                <option value="">Todos los temas</option>
+                                <option th:each="theme : ${themes}" th:value="${theme.id}" th:text="${theme.name}"
+                                    th:selected="${theme.id == selectedTheme}">
+                                    Tema
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="difficulty" class="form-label">Dificultad</label>
+                            <select class="form-select" id="difficulty" name="difficulty">
+                                <option value="">Todas las dificultades</option>
+                                <option value="EASY" th:selected="${selectedDifficulty == 'EASY'}">Fácil</option>
+                                <option value="MEDIUM" th:selected="${selectedDifficulty == 'MEDIUM'}">Media</option>
+                                <option value="HARD" th:selected="${selectedDifficulty == 'HARD'}">Difícil</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="bi bi-funnel me-1"></i>
+                                Filtrar
+                            </button>
+                            <a th:href="@{/admin/questions}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle me-1"></i>
+                                Limpiar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Questions Table -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Pregunta</th>
+                                    <th>Tema</th>
+                                    <th>Dificultad</th>
+                                    <th>Tipo</th>
+                                    <th>Creado por</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="question : ${questions.content}">
+                                    <td th:text="${question.id}">1</td>
+                                    <td th:text="${question.questionText}">Pregunta</td>
+                                    <td>
+                                        <span class="badge bg-info"
+                                            th:text="${question.theme?.name ?: 'Sin tema'}">Tema</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge"
+                                            th:classappend="${question.difficulty.name() == 'EASY'} ? 'bg-success' : (${question.difficulty.name() == 'MEDIUM'} ? 'bg-warning' : 'bg-danger')"
+                                            th:text="${question.difficulty}">
+                                            Dificultad
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary" th:text="${question.questionType}">Tipo</span>
+                                    </td>
+                                    <td th:text="${question.createdBy}">Usuario</td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <a th:href="@{/admin/questions/{id}/edit(id=${question.id})}"
+                                                class="btn btn-sm btn-primary me-1" title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form th:action="@{/admin/questions/{id}/delete(id=${question.id})}"
+                                                method="post" style="display: inline;"
+                                                onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta pregunta?');">
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <nav th:if="${questions.totalPages > 1}">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${questions.first} ? 'disabled'">
+                                <a class="page-link"
+                                    th:href="@{/admin/questions(page=${questions.number - 1},size=${questions.size})}">Anterior</a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, questions.totalPages - 1)}"
+                                th:classappend="${i == questions.number} ? 'active'">
+                                <a class="page-link" th:href="@{/admin/questions(page=${i},size=${questions.size})}"
+                                    th:text="${i + 1}">1</a>
+                            </li>
+                            <li class="page-item" th:classappend="${questions.last} ? 'disabled'">
+                                <a class="page-link"
+                                    th:href="@{/admin/questions(page=${questions.number + 1},size=${questions.size})}">Siguiente</a>
+                            </li>
+                        </ul>
+                        <div class="text-center text-muted small">
+                            Mostrando página <span th:text="${questions.number + 1}">1</span> de <span
+                                th:text="${questions.totalPages}">1</span>
+                            (<span th:text="${questions.totalElements}">0</span> preguntas en total)
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+
+</html>

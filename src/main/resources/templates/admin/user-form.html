@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+
+<head th:replace="~{fragments/head :: head('Editar Usuario')}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="flex-shrink-0">
+        <div class="container mt-4">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/admin/users}">Usuarios</a></li>
+                    <li class="breadcrumb-item active">Editar Usuario</li>
+                </ol>
+            </nav>
+
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">
+                                <i class="bi bi-person-gear me-2"></i>
+                                Editar Usuario
+                            </h4>
+                        </div>
+                        <div class="card-body p-4">
+
+                            <!-- Flash Messages -->
+                            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show"
+                                role="alert">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                <span th:text="${errorMessage}"></span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+
+                            <form th:action="@{/admin/users/{id}/edit(id=${user.id})}" method="post">
+
+                                <!-- Username -->
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Nombre de Usuario *</label>
+                                    <input type="text" class="form-control" id="username" name="username"
+                                        th:value="${user.username}" required>
+                                </div>
+
+                                <!-- Email -->
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email *</label>
+                                    <input type="email" class="form-control" id="email" name="email"
+                                        th:value="${user.email}" required>
+                                </div>
+
+                                <!-- Role -->
+                                <div class="mb-3">
+                                    <label for="role" class="form-label">Rol del Usuario *</label>
+                                    <select class="form-select" id="role" name="role">
+                                        <option value="ROLE_USER" th:selected="${!user.roles.contains('ROLE_ADMIN')}">
+                                            Usuario Estándar</option>
+                                        <option value="ROLE_ADMIN" th:selected="${user.roles.contains('ROLE_ADMIN')}">
+                                            Administrador</option>
+                                    </select>
+                                    <div class="form-text">
+                                        Los administradores tienen acceso completo al panel de gestión.
+                                    </div>
+                                </div>
+
+                                <!-- Password -->
+                                <div class="mb-4">
+                                    <label for="password" class="form-label">Nueva Contraseña</label>
+                                    <input type="password" class="form-control" id="password" name="password"
+                                        placeholder="Dejar en blanco para mantener la actual">
+                                    <div class="form-text">
+                                        Solo rellena este campo si deseas cambiar la contraseña del usuario.
+                                    </div>
+                                </div>
+
+                                <!-- Buttons -->
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a th:href="@{/admin/users}" class="btn btn-secondary">
+                                        <i class="bi bi-x-circle me-1"></i>
+                                        Cancelar
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-save me-1"></i>
+                                        Guardar Cambios
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+
+</html>

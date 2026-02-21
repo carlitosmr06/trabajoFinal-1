@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<body>
+    <!-- Question Card Fragment -->
+    <div th:fragment="question-card (question)" class="card mb-3 shadow-sm">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h5 class="card-title mb-0" th:text="${question.questionText}">Pregunta</h5>
+                <span class="badge"
+                    th:classappend="${question.difficulty.name() == 'EASY'} ? 'bg-success' : (${question.difficulty.name() == 'MEDIUM'} ? 'bg-warning' : 'bg-danger')"
+                    th:text="${question.difficulty}">
+                    Dificultad
+                </span>
+            </div>
+
+            <div class="mb-2">
+                <small class="text-muted">
+                    <i class="bi bi-tag-fill"></i>
+                    <span th:text="${question.theme?.name ?: 'Sin tema'}">Tema</span>
+                    <span class="mx-2">|</span>
+                    <i class="bi bi-card-list"></i>
+                    <span th:text="${question.questionType}">Tipo</span>
+                </small>
+            </div>
+
+            <div class="d-flex gap-2">
+                <a th:href="@{/questions/{id}(id=${question.id})}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-eye"></i> Ver
+                </a>
+                <a th:href="@{/questions/{id}/edit(id=${question.id})}" class="btn btn-sm btn-outline-secondary"
+                    sec:authorize="hasRole('ADMIN')">
+                    <i class="bi bi-pencil"></i> Editar
+                </a>
+                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                    th:data-bs-target="'#deleteModal' + ${question.id}" sec:authorize="hasRole('ADMIN')">
+                    <i class="bi bi-trash"></i> Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Card Fragment -->
+    <div th:fragment="stats-card (title, value, icon, color)" class="card text-white mb-3"
+        th:classappend="${'bg-' + (color ?: 'primary')}">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="card-title text-uppercase mb-0" th:text="${title}">Título</h6>
+                    <h2 class="mb-0 mt-2" th:text="${value}">0</h2>
+                </div>
+                <div class="fs-1">
+                    <i th:class="${'bi bi-' + (icon ?: 'bar-chart')}"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty State Card Fragment -->
+    <div th:fragment="empty-state (message, icon, actionUrl, actionText)" class="card text-center py-5">
+        <div class="card-body">
+            <i th:class="${'bi bi-' + (icon ?: 'inbox')} display-1 text-muted mb-3"></i>
+            <h5 class="text-muted" th:text="${message ?: 'No hay elementos para mostrar'}">
+                No hay elementos para mostrar
+            </h5>
+            <a th:if="${actionUrl}" th:href="@{${actionUrl}}" class="btn btn-primary mt-3"
+                th:text="${actionText ?: 'Crear nuevo'}">
+                Crear nuevo
+            </a>
+        </div>
+    </div>
+
+    <!-- Loading Card Fragment -->
+    <div th:fragment="loading-card" class="card">
+        <div class="card-body text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-3 text-muted">Cargando...</p>
+        </div>
+    </div>
+
+    <!-- Info Card Fragment -->
+    <div th:fragment="info-card (title, content, variant)" class="card mb-3"
+        th:classappend="${variant ? 'border-' + variant : ''}">
+        <div class="card-header" th:if="${title}" th:classappend="${variant ? 'bg-' + variant + ' text-white' : ''}">
+            <h6 class="mb-0" th:text="${title}">Título</h6>
+        </div>
+        <div class="card-body">
+            <div th:utext="${content}">Contenido</div>
+        </div>
+    </div>
+</body>
+
+</html>

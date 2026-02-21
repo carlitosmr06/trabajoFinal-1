@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+
+<head th:replace="~{fragments/head :: head('Hacer Test')}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="flex-shrink-0">
+        <div class="container mt-4">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                    <li class="breadcrumb-item active">Test</li>
+                </ol>
+            </nav>
+
+            <!-- Page Title -->
+            <h1 class="mb-4">
+                <i class="bi bi-clipboard-check-fill me-2"></i>
+                Hacer un Test
+            </h1>
+
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <div class="card shadow">
+                        <div class="card-body p-4">
+                            <h5 class="card-title mb-4">Configura tu test</h5>
+
+                            <form th:action="@{/test/start}" method="post">
+                                <div class="mb-4">
+                                    <label for="theme" class="form-label">
+                                        <i class="bi bi-tag-fill me-1"></i>
+                                        Tema
+                                    </label>
+                                    <select class="form-select form-select-lg" id="theme" name="themeId">
+                                        <option value="">Todos los temas</option>
+                                        <option th:each="theme : ${themes}" th:value="${theme.id}"
+                                            th:text="${theme.name}">
+                                            Tema
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="difficulty" class="form-label">
+                                        <i class="bi bi-speedometer2 me-1"></i>
+                                        Dificultad
+                                    </label>
+                                    <select class="form-select form-select-lg" id="difficulty" name="difficulty">
+                                        <option value="">Todas las dificultades</option>
+                                        <option value="EASY">Fácil</option>
+                                        <option value="MEDIUM">Media</option>
+                                        <option value="HARD">Difícil</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="questionCount" class="form-label">
+                                        <i class="bi bi-hash me-1"></i>
+                                        Número de preguntas
+                                    </label>
+                                    <input type="number" class="form-control form-control-lg" id="questionCount"
+                                        name="questionCount" value="10" min="1" max="50" required>
+                                    <div class="form-text">Mínimo 1, máximo 50 preguntas</div>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="bi bi-play-fill me-2"></i>
+                                        Comenzar Test
+                                    </button>
+                                    <a th:href="@{/}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left me-1"></i>
+                                        Volver al inicio
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Info Card -->
+                    <div class="card mt-4 border-info">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <i class="bi bi-info-circle-fill text-info me-2"></i>
+                                Instrucciones
+                            </h6>
+                            <ul class="mb-0">
+                                <li>Selecciona el tema y dificultad de las preguntas</li>
+                                <li>Elige cuántas preguntas quieres en tu test</li>
+                                <li>Las preguntas se seleccionarán aleatoriamente</li>
+                                <li>Tendrás tiempo ilimitado para completar el test</li>
+                                <li>Al finalizar verás tu puntuación y las respuestas correctas</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+
+</html>

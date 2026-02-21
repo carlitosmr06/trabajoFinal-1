@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head th:replace="~{fragments/head :: head('Error 404')}"></head>
+
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <div class="card">
+                    <div class="card-body py-5">
+                        <h1 class="display-1">404</h1>
+                        <h2>Página no encontrada</h2>
+                        <p class="lead">Lo sentimos, la página que buscas no existe.</p>
+                        <a th:href="@{/}" class="btn btn-primary mt-3">Volver al Inicio</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+
+</html>

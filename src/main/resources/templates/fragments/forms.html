@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<body>
+    <!-- Text Input Field Fragment -->
+    <div th:fragment="text-input (fieldName, label, placeholder, required)" class="mb-3">
+        <label th:for="${fieldName}" class="form-label" th:text="${label}">Label</label>
+        <input type="text" class="form-control" th:id="${fieldName}" th:name="${fieldName}"
+            th:placeholder="${placeholder}" th:required="${required}" th:field="*{__${fieldName}__}"
+            th:errorclass="is-invalid">
+        <div class="invalid-feedback" th:if="${#fields.hasErrors(fieldName)}" th:errors="*{__${fieldName}__}">
+            Error
+        </div>
+    </div>
+
+    <!-- Textarea Field Fragment -->
+    <div th:fragment="textarea (fieldName, label, placeholder, rows, required)" class="mb-3">
+        <label th:for="${fieldName}" class="form-label" th:text="${label}">Label</label>
+        <textarea class="form-control" th:id="${fieldName}" th:name="${fieldName}" th:placeholder="${placeholder}"
+            th:rows="${rows ?: 3}" th:required="${required}" th:field="*{__${fieldName}__}"
+            th:errorclass="is-invalid"></textarea>
+        <div class="invalid-feedback" th:if="${#fields.hasErrors(fieldName)}" th:errors="*{__${fieldName}__}">
+            Error
+        </div>
+    </div>
+
+    <!-- Select Dropdown Fragment -->
+    <div th:fragment="select (fieldName, label, options, required)" class="mb-3">
+        <label th:for="${fieldName}" class="form-label" th:text="${label}">Label</label>
+        <select class="form-select" th:id="${fieldName}" th:name="${fieldName}" th:required="${required}"
+            th:field="*{__${fieldName}__}" th:errorclass="is-invalid">
+            <option value="">Seleccione una opción</option>
+            <option th:each="option : ${options}" th:value="${option.value}" th:text="${option.text}">Option</option>
+        </select>
+        <div class="invalid-feedback" th:if="${#fields.hasErrors(fieldName)}" th:errors="*{__${fieldName}__}">
+            Error
+        </div>
+    </div>
+
+    <!-- Checkbox Fragment -->
+    <div th:fragment="checkbox (fieldName, label)" class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" th:id="${fieldName}" th:name="${fieldName}"
+            th:field="*{__${fieldName}__}" th:errorclass="is-invalid">
+        <label class="form-check-label" th:for="${fieldName}" th:text="${label}">Label</label>
+        <div class="invalid-feedback" th:if="${#fields.hasErrors(fieldName)}" th:errors="*{__${fieldName}__}">
+            Error
+        </div>
+    </div>
+
+    <!-- Radio Button Group Fragment -->
+    <div th:fragment="radio-group (fieldName, label, options, required)" class="mb-3">
+        <label class="form-label" th:text="${label}">Label</label>
+        <div th:each="option, iterStat : ${options}" class="form-check">
+            <input type="radio" class="form-check-input" th:id="${fieldName + iterStat.index}" th:name="${fieldName}"
+                th:value="${option.value}" th:required="${required}" th:field="*{__${fieldName}__}"
+                th:errorclass="is-invalid">
+            <label class="form-check-label" th:for="${fieldName + iterStat.index}"
+                th:text="${option.text}">Option</label>
+        </div>
+        <div class="invalid-feedback d-block" th:if="${#fields.hasErrors(fieldName)}" th:errors="*{__${fieldName}__}">
+            Error
+        </div>
+    </div>
+
+    <!-- Submit Button Fragment -->
+    <div th:fragment="submit-button (text, variant)" class="mb-3">
+        <button type="submit" class="btn" th:classappend="${'btn-' + (variant ?: 'primary')}"
+            th:text="${text ?: 'Enviar'}">
+            Enviar
+        </button>
+    </div>
+
+    <!-- Cancel Button Fragment -->
+    <div th:fragment="cancel-button (url, text)" class="mb-3">
+        <a th:href="@{${url}}" class="btn btn-secondary" th:text="${text ?: 'Cancelar'}">
+            Cancelar
+        </a>
+    </div>
+
+    <!-- Form Actions (Submit + Cancel) Fragment -->
+    <div th:fragment="form-actions (cancelUrl, submitText, cancelText)" class="mb-3">
+        <button type="submit" class="btn btn-primary me-2" th:text="${submitText ?: 'Guardar'}">
+            Guardar
+        </button>
+        <a th:href="@{${cancelUrl}}" class="btn btn-secondary" th:text="${cancelText ?: 'Cancelar'}">
+            Cancelar
+        </a>
+    </div>
+
+    <!-- Delete Confirmation Modal Fragment -->
+    <div th:fragment="delete-modal (modalId, title, message)" class="modal fade" th:id="${modalId}" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" th:text="${title ?: 'Confirmar eliminación'}">Confirmar eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p th:text="${message ?: '¿Está seguro de que desea eliminar este elemento?'}">
+                        ¿Está seguro de que desea eliminar este elemento?
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

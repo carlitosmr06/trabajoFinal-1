@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<body>
+    <!-- Success Alert Fragment -->
+    <div th:fragment="success" th:if="${successMessage}" class="alert alert-success alert-dismissible fade show"
+        role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${successMessage}">Operación exitosa</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Error Alert Fragment -->
+    <div th:fragment="error" th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show"
+        role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${errorMessage}">Ha ocurrido un error</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Warning Alert Fragment -->
+    <div th:fragment="warning" th:if="${warningMessage}" class="alert alert-warning alert-dismissible fade show"
+        role="alert">
+        <i class="bi bi-exclamation-circle-fill me-2"></i>
+        <span th:text="${warningMessage}">Advertencia</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Info Alert Fragment -->
+    <div th:fragment="info" th:if="${infoMessage}" class="alert alert-info alert-dismissible fade show" role="alert">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        <span th:text="${infoMessage}">Información</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- All Alerts Combined Fragment -->
+    <div th:fragment="all-alerts">
+        <div th:replace="~{fragments/alerts :: success}"></div>
+        <div th:replace="~{fragments/alerts :: error}"></div>
+        <div th:replace="~{fragments/alerts :: warning}"></div>
+        <div th:replace="~{fragments/alerts :: info}"></div>
+    </div>
+
+    <!-- Validation Errors Fragment -->
+    <div th:fragment="validation-errors" th:if="${#fields.hasErrors('*')}" class="alert alert-danger" role="alert">
+        <h6 class="alert-heading">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            Por favor, corrija los siguientes errores:
+        </h6>
+        <ul class="mb-0">
+            <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>
+        </ul>
+    </div>
+</body>
+
+</html>

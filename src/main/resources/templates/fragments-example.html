@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+
+<head th:replace="~{fragments/head :: head('Ejemplo de Uso de Fragments')}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+    <!-- Header -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <!-- Main Content -->
+    <main class="flex-shrink-0">
+        <div class="container mt-4">
+            <!-- Breadcrumb -->
+            <div th:replace="~{fragments/breadcrumb :: questions-breadcrumb}"></div>
+
+            <!-- Page Title -->
+            <h1 class="mb-4">
+                <i class="bi bi-puzzle-fill me-2"></i>
+                Ejemplo de Uso de Fragments
+            </h1>
+
+            <!-- Alerts Section -->
+            <section class="mb-5">
+                <h2 class="h4 mb-3">
+                    <i class="bi bi-bell-fill me-2"></i>
+                    Alertas
+                </h2>
+
+                <!-- Success Alert -->
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    ¡Operación completada exitosamente!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <!-- Error Alert -->
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Ha ocurrido un error al procesar la solicitud.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <!-- Warning Alert -->
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-circle-fill me-2"></i>
+                    Advertencia: Esta acción no se puede deshacer.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <!-- Info Alert -->
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    Información: Los cambios se guardarán automáticamente.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </section>
+
+            <!-- Cards Section -->
+            <section class="mb-5">
+                <h2 class="h4 mb-3">
+                    <i class="bi bi-card-heading me-2"></i>
+                    Tarjetas de Estadísticas
+                </h2>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card text-white bg-primary mb-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title text-uppercase mb-0">Total Preguntas</h6>
+                                        <h2 class="mb-0 mt-2">150</h2>
+                                    </div>
+                                    <div class="fs-1">
+                                        <i class="bi bi-question-circle"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-success mb-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title text-uppercase mb-0">Tests Realizados</h6>
+                                        <h2 class="mb-0 mt-2">45</h2>
+                                    </div>
+                                    <div class="fs-1">
+                                        <i class="bi bi-clipboard-check"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-warning mb-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title text-uppercase mb-0">Usuarios</h6>
+                                        <h2 class="mb-0 mt-2">28</h2>
+                                    </div>
+                                    <div class="fs-1">
+                                        <i class="bi bi-people"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-info mb-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title text-uppercase mb-0">Temas</h6>
+                                        <h2 class="mb-0 mt-2">12</h2>
+                                    </div>
+                                    <div class="fs-1">
+                                        <i class="bi bi-tags"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Form Example Section -->
+            <section class="mb-5">
+                <h2 class="h4 mb-3">
+                    <i class="bi bi-input-cursor-text me-2"></i>
+                    Ejemplo de Formulario
+                </h2>
+                <div class="card">
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="questionText" class="form-label">Texto de la Pregunta</label>
+                                <input type="text" class="form-control" id="questionText"
+                                    placeholder="Ingrese la pregunta">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="theme" class="form-label">Tema</label>
+                                <select class="form-select" id="theme">
+                                    <option value="">Seleccione un tema</option>
+                                    <option value="1">Matemáticas</option>
+                                    <option value="2">Historia</option>
+                                    <option value="3">Ciencias</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Dificultad</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="difficulty" id="easy"
+                                        value="EASY">
+                                    <label class="form-check-label" for="easy">Fácil</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="difficulty" id="medium"
+                                        value="MEDIUM">
+                                    <label class="form-check-label" for="medium">Media</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="difficulty" id="hard"
+                                        value="HARD">
+                                    <label class="form-check-label" for="hard">Difícil</label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="bi bi-save me-1"></i>
+                                    Guardar
+                                </button>
+                                <a href="#" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle me-1"></i>
+                                    Cancelar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Empty State Example -->
+            <section class="mb-5">
+                <h2 class="h4 mb-3">
+                    <i class="bi bi-inbox me-2"></i>
+                    Estado Vacío
+                </h2>
+                <div class="card text-center py-5">
+                    <div class="card-body">
+                        <i class="bi bi-inbox display-1 text-muted mb-3"></i>
+                        <h5 class="text-muted">No hay preguntas disponibles</h5>
+                        <p class="text-muted">Comience creando su primera pregunta</p>
+                        <a href="#" class="btn btn-primary mt-3">
+                            <i class="bi bi-plus-circle me-1"></i>
+                            Crear Pregunta
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pagination Example -->
+            <section class="mb-5">
+                <h2 class="h4 mb-3">
+                    <i class="bi bi-arrow-left-right me-2"></i>
+                    Paginación
+                </h2>
+                <nav aria-label="Navegación de páginas">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Primera">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Anterior">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">4</a></li>
+                        <li class="page-item"><a class="page-link" href="#">5</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#" aria-label="Siguiente">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#" aria-label="Última">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="text-center text-muted small">
+                        Mostrando página 1 de 5 (50 elementos en total)
+                    </div>
+                </nav>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+
+</html>
