@@ -32,7 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
             String username = jwtTokenProvider.extractUsername(token);
 
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (username != null) {
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
                 if (jwtTokenProvider.validateToken(token, userDetails)) {
@@ -42,6 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             userDetails.getAuthorities());
 
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    // OVERRIDE any existing authentication (e.g., from JSESSIONID) if a valid JWT is provided
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }

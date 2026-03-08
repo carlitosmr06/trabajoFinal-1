@@ -92,6 +92,29 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User updateUserFormAdmin(Long userId, String email, String newPassword, java.util.List<String> roles) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (email != null && !email.isBlank()) {
+            if (!user.getEmail().equals(email) && userRepository.existsByEmail(email)) {
+                throw new RuntimeException("El email ya está en uso");
+            }
+            user.setEmail(email);
+        }
+
+        if (newPassword != null && !newPassword.isBlank()) {
+            user.setPassword(passwordEncoder.encode(newPassword));
+        }
+
+        if (roles != null && !roles.isEmpty()) {
+            user.getRoles().clear();
+            user.getRoles().addAll(roles);
+        }
+
+        return userRepository.save(user);
+    }
+
     public User changePassword(Long userId, String oldPassword, String newPassword) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));

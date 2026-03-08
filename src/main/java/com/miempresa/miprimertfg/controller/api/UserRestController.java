@@ -35,6 +35,13 @@ public class UserRestController {
         private String newPassword;
     }
 
+    @Data
+    public static class CreateUserRequest {
+        private String username;
+        private String email;
+        private String password;
+    }
+
     @Operation(summary = "Obtener perfil", description = "Obtener perfil del usuario autenticado")
     @GetMapping("/profile")
     @PreAuthorize("isAuthenticated()")
@@ -102,14 +109,48 @@ public class UserRestController {
         }
     }
 
-    @Operation(summary = "Actualizar usuario por ID", description = "Actualizar email de un usuario por ID (requiere rol ADMIN)")
+    @Operation(summary = "Obtener usuario por ID", description = "Obtener un usuario por ID (requiere rol ADMIN)")
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+        try {
+            User user = userService.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            user.setPassword(null);
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "Crear usuario (admin)", description = "Crear un nuevo usuario (requiere rol ADMIN)")
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> createUser(@RequestBody CreateUserRequest request) {
+        try {
+            User user = userService.register(request.getUsername(), request.getEmail(), request.getPassword());
+            user.setPassword(null);
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @Data
+    public static class AdminUpdateUserRequest {
+        private String email;
+        private String password;
+        private java.util.List<String> roles;
+    }
+
+    @Operation(summary = "Actualizar usuario por ID", description = "Actualizar usuario por ID (requiere rol ADMIN)")
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateUserById(
             @PathVariable Long id,
-            @RequestBody UpdateProfileRequest request) {
+            @RequestBody AdminUpdateUserRequest request) {
         try {
-            User updated = userService.updateProfile(id, request.getEmail());
+            User updated = userService.updateUserFormAdmin(id, request.getEmail(), request.getPassword(), request.getRoles());
             updated.setPassword(null);
             return ResponseEntity.ok(updated);
         } catch (Exception e) {

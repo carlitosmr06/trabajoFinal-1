@@ -3,6 +3,7 @@ package com.miempresa.miprimertfg.controller.api;
 import com.miempresa.miprimertfg.model.*;
 import com.miempresa.miprimertfg.service.QuestionService;
 import com.miempresa.miprimertfg.service.ThemeService;
+import com.miempresa.miprimertfg.service.FileUploadService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -13,8 +14,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Tag(name = "Questions", description = "API de gestión de preguntas")
@@ -26,6 +31,7 @@ public class QuestionRestController {
 
     private final QuestionService questionService;
     private final ThemeService themeService;
+    private final FileUploadService fileUploadService;
 
     @Operation(summary = "Listar preguntas", description = "Obtener lista paginada de preguntas con filtros opcionales")
     @GetMapping
@@ -54,9 +60,9 @@ public class QuestionRestController {
         return ResponseEntity.notFound().build();
     }
 
-    @Operation(summary = "Crear pregunta", description = "Crear una nueva pregunta (requiere autenticación)")
+    @Operation(summary = "Crear pregunta", description = "Crear una nueva pregunta (requiere rol ADMIN)")
     @PostMapping
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createQuestion(@Valid @RequestBody Question question) {
         try {
             Question savedQuestion = questionService.save(question);
@@ -113,6 +119,34 @@ public class QuestionRestController {
             }
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "Subir archivo de preguntas", description = "Importar preguntas desde un archivo CSV o JSON (requiere rol ADMIN)")
+    @PostMapping("/upload")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> uploadQuestions(
+            @RequestParam("file") MultipartFile file,
+            Authentication authentication) {
+        
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Por favor selecciona un archivo"));
+        }
+
+        String filename = file.getOriginalFilename();
+        if (filename == null || (!filename.endsWith(".csv") && !filename.endsWith(".json"))) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Formato no soportado. Use archivos CSV o JSON."));
+        }
+
+        try {
+            String createdBy = authentication != null ? authentication.getName() : "admin";
+            List<Question> imported = fileUploadService.uploadQuestions(file, createdBy);
+            return ResponseEntity.ok(Map.of(
+                "message", "¡Importación exitosa! Se importaron " + imported.size() + " preguntas.",
+                "count", imported.size()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Error al procesar el archivo: " + e.getMessage()));
         }
     }
 }
